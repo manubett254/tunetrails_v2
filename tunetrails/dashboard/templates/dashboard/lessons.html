@@ -1,6 +1,363 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Lessons | Tunetrails{% endblock %}
+
+{% block extra_css %}
+<style>
+    .lessons-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+    
+    .progress-container {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 3rem;
+    }
+    
+    .progress-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .progress-title {
+        color: white;
+        font-size: 1.5rem;
+        font-weight: 600;
+    }
+    
+    .progress-bar {
+        height: 12px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 6px;
+        overflow: hidden;
+        margin-bottom: 1rem;
+    }
+    
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+        border-radius: 6px;
+        transition: width 1s ease;
+    }
+    
+    .progress-info {
+        display: flex;
+        justify-content: space-between;
+        color: rgba(255, 255, 255, 0.8);
+    }
+    
+    .lessons-grid {
+        display: grid;
+        gap: 1.5rem;
+        margin: 2rem 0;
+    }
+    
+    .lesson-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 16px;
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        transition: var(--transition);
+    }
+    
+    .lesson-card:hover {
+        transform: translateX(10px);
+        border-color: var(--accent-color);
+    }
+    
+    .lesson-number {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 700;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+    
+    .lesson-content {
+        flex: 1;
+    }
+    
+    .lesson-title {
+        color: white;
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+    .lesson-description {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+    
+    .lesson-meta {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 1rem;
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.6);
+    }
+    
+    .lesson-meta i {
+        color: var(--accent-color);
+    }
+    
+    .lesson-status {
+        padding: 0.4rem 1rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+    
+    .status-completed {
+        background: rgba(78, 205, 196, 0.2);
+        color: var(--accent-color);
+    }
+    
+    .status-current {
+        background: rgba(138, 43, 226, 0.2);
+        color: var(--primary-color);
+    }
+    
+    .status-upcoming {
+        background: rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .action-btn {
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        color: white;
+        border: none;
+        padding: 0.8rem 1.5rem;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: var(--transition);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(138, 43, 226, 0.3);
+    }
+    
+    .course-selector {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .selector-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+    
+    .course-dropdown {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid var(--glass-border);
+        border-radius: 12px;
+        padding: 1rem;
+        color: white;
+        font-size: 1rem;
+        transition: var(--transition);
+    }
+    
+    .course-dropdown:focus {
+        outline: none;
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 3px rgba(78, 205, 196, 0.2);
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+    }
+    
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+    
+    .empty-title {
+        color: white;
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
+    }
+    
+    .empty-description {
+        color: rgba(255, 255, 255, 0.8);
+        max-width: 500px;
+        margin: 0 auto 2rem;
+        line-height: 1.6;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<h1>Welcome to Tunetrails!</h1>
-<p>This is your blank lessons page.</p>
+<div class="lessons-header">
+    <h1 class="page-title">Your Learning Path</h1>
+    <p class="page-subtitle">
+        Continue your musical journey with interactive lessons designed to help you 
+        progress step by step.
+    </p>
+</div>
+
+<div class="course-selector">
+    <div class="selector-header">
+        <h3 style="color: white; margin: 0;">Select Course</h3>
+    </div>
+    <select class="course-dropdown">
+        <option value="guitar-beginner">🎸 Beginner Guitar Mastery</option>
+        <option value="drums-rock">🥁 Rock Drumming Fundamentals</option>
+        <option value="vocals-techniques">🎤 Vocal Techniques & Harmony</option>
+        <option value="theory-advanced">🎼 Advanced Music Theory</option>
+        <option value="piano-jazz">🎹 Jazz Piano Improvisation</option>
+    </select>
+</div>
+
+<div class="progress-container">
+    <div class="progress-header">
+        <div class="progress-title">Course Progress</div>
+        <div style="color: var(--accent-color); font-weight: 600;">65% Complete</div>
+    </div>
+    <div class="progress-bar">
+        <div class="progress-fill" style="width: 65%;"></div>
+    </div>
+    <div class="progress-info">
+        <span>24 of 40 lessons completed</span>
+        <span>Estimated: 3 weeks remaining</span>
+    </div>
+</div>
+
+<div class="lessons-grid">
+    <!-- Lesson 1 - Completed -->
+    <div class="lesson-card">
+        <div class="lesson-number">1</div>
+        <div class="lesson-content">
+            <h3 class="lesson-title">Introduction to Guitar Anatomy</h3>
+            <p class="lesson-description">
+                Learn about the different parts of the guitar and how they work together 
+                to create beautiful music.
+            </p>
+            <div class="lesson-meta">
+                <span><i class="far fa-clock"></i> 15 min</span>
+                <span><i class="fas fa-play-circle"></i> Video Lesson</span>
+                <span class="lesson-status status-completed">Completed</span>
+            </div>
+        </div>
+        <button class="action-btn">
+            <i class="fas fa-redo"></i> Review
+        </button>
+    </div>
+    
+    <!-- Lesson 2 - Completed -->
+    <div class="lesson-card">
+        <div class="lesson-number">2</div>
+        <div class="lesson-content">
+            <h3 class="lesson-title">Proper Posture and Hand Position</h3>
+            <p class="lesson-description">
+                Master the correct posture and hand positioning for comfortable and 
+                efficient guitar playing.
+            </p>
+            <div class="lesson-meta">
+                <span><i class="far fa-clock"></i> 20 min</span>
+                <span><i class="fas fa-play-circle"></i> Video Lesson</span>
+                <span class="lesson-status status-completed">Completed</span>
+            </div>
+        </div>
+        <button class="action-btn">
+            <i class="fas fa-redo"></i> Review
+        </button>
+    </div>
+    
+    <!-- Lesson 3 - Current -->
+    <div class="lesson-card">
+        <div class="lesson-number">3</div>
+        <div class="lesson-content">
+            <h3 class="lesson-title">Basic Chords: C, G, D</h3>
+            <p class="lesson-description">
+                Learn your first three chords and practice transitioning between them 
+                smoothly.
+            </p>
+            <div class="lesson-meta">
+                <span><i class="far fa-clock"></i> 25 min</span>
+                <span><i class="fas fa-play-circle"></i> Video Lesson</span>
+                <span class="lesson-status status-current">In Progress</span>
+            </div>
+        </div>
+        <button class="action-btn">
+            <i class="fas fa-play"></i> Continue
+        </button>
+    </div>
+    
+    <!-- Lesson 4 - Upcoming -->
+    <div class="lesson-card">
+        <div class="lesson-number">4</div>
+        <div class="lesson-content">
+            <h3 class="lesson-title">Strumming Patterns and Rhythm</h3>
+            <p class="lesson-description">
+                Develop your rhythm skills with essential strumming patterns for 
+                various musical styles.
+            </p>
+            <div class="lesson-meta">
+                <span><i class="far fa-clock"></i> 30 min</span>
+                <span><i class="fas fa-play-circle"></i> Video Lesson</span>
+                <span class="lesson-status status-upcoming">Upcoming</span>
+            </div>
+        </div>
+        <button class="action-btn" disabled style="opacity: 0.5;">
+            <i class="fas fa-lock"></i> Locked
+        </button>
+    </div>
+    
+    <!-- Lesson 5 - Upcoming -->
+    <div class="lesson-card">
+        <div class="lesson-number">5</div>
+        <div class="lesson-content">
+            <h3 class="lesson-title">Your First Song: "Horse with No Name"</h3>
+            <p class="lesson-description">
+                Put your skills together and learn to play your first complete song 
+                from start to finish.
+            </p>
+            <div class="lesson-meta">
+                <span><i class="far fa-clock"></i> 35 min</span>
+                <span><i class="fas fa-play-circle"></i> Video Lesson</span>
+                <span class="lesson-status status-upcoming">Upcoming</span>
+            </div>
+        </div>
+        <button class="action-btn" disabled style="opacity: 0.5;">
+            <i class="fas fa-lock"></i> Locked
+        </button>
+    </div>
+</div>
 {% endblock %}

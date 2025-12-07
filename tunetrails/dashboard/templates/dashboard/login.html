@@ -523,15 +523,15 @@
         onAuthStateChanged 
     } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
     
-    // Firebase configuration
+    // Firebase configuration from Django context
     const firebaseConfig = {
-        apiKey: "AIzaSyAQLreoWTPOMekuiqOOvgX-zn0yPXcT1_Y",
-        authDomain: "tunetrails-v2.firebaseapp.com",
-        projectId: "tunetrails-v2",
-        storageBucket: "tunetrails-v2.firebasestorage.app",
-        messagingSenderId: "614045056384",
-        appId: "1:614045056384:web:1ec0524dbf570db5d19565",
-        measurementId: "G-4YGPXK3HWE"
+        apiKey: "{{ FIREBASE_API_KEY }}",
+        authDomain: "{{ FIREBASE_AUTH_DOMAIN }}",
+        projectId: "{{ FIREBASE_PROJECT_ID }}",
+        storageBucket: "{{ FIREBASE_STORAGE_BUCKET }}",
+        messagingSenderId: "{{ FIREBASE_MESSAGING_SENDER_ID }}",
+        appId: "{{ FIREBASE_APP_ID }}",
+        measurementId: "{{ FIREBASE_MEASUREMENT_ID }}"
     };
 
     // Initialize Firebase

@@ -1,6 +1,640 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard | Tunetrails{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-header {
+        margin-bottom: 3rem;
+    }
+    
+    .welcome-message {
+        color: white;
+        font-size: 1.8rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+    .welcome-subtitle {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 1.1rem;
+    }
+    
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+    
+    .dashboard-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 2rem;
+        transition: var(--transition);
+        position: relative;
+    }
+    
+    .dashboard-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+        border-radius: 20px 20px 0 0;
+    }
+    
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    }
+    
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1.5rem;
+    }
+    
+    .card-title {
+        color: white;
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin: 0;
+    }
+    
+    .card-icon {
+        font-size: 2rem;
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+    
+    .progress-summary {
+        margin-bottom: 2rem;
+    }
+    
+    .progress-item {
+        margin-bottom: 1.5rem;
+    }
+    
+    .progress-label {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+        color: rgba(255, 255, 255, 0.9);
+    }
+    
+    .progress-bar-small {
+        height: 8px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    
+    .progress-fill-small {
+        height: 100%;
+        background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+        border-radius: 4px;
+    }
+    
+    .quick-stats {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    
+    .stat-box {
+        text-align: center;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+    }
+    
+    .stat-number {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 0.3rem;
+    }
+    
+    .stat-label {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.9rem;
+    }
+    
+    .activity-list {
+        display: grid;
+        gap: 1rem;
+    }
+    
+    .activity-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        transition: var(--transition);
+    }
+    
+    .activity-item:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .activity-icon {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+    }
+    
+    .activity-content {
+        flex: 1;
+    }
+    
+    .activity-title {
+        color: white;
+        font-weight: 600;
+        margin-bottom: 0.2rem;
+    }
+    
+    .activity-time {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.9rem;
+    }
+    
+    .recommendation-list {
+        display: grid;
+        gap: 1rem;
+    }
+    
+    .recommendation-item {
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        border-left: 4px solid var(--accent-color);
+    }
+    
+    .recommendation-title {
+        color: white;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+    .recommendation-desc {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.95rem;
+        line-height: 1.5;
+        margin-bottom: 1rem;
+    }
+    
+    .streak-container {
+        text-align: center;
+        padding: 2rem;
+    }
+    
+    .streak-number {
+        font-size: 4rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin-bottom: 0.5rem;
+    }
+    
+    .streak-label {
+        color: white;
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+    .streak-subtitle {
+        color: rgba(255, 255, 255, 0.7);
+        margin-bottom: 1.5rem;
+    }
+    
+    .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 0.5rem;
+        margin-top: 1.5rem;
+    }
+    
+    .calendar-day {
+        aspect-ratio: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+    
+    .day-active {
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        color: white;
+    }
+    
+    .day-inactive {
+        background: rgba(255, 255, 255, 0.05);
+        color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .weekday-label {
+        text-align: center;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.8rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+    
+    .action-btn {
+        flex: 1;
+        padding: 0.8rem;
+        border-radius: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        border: none;
+        color: white;
+        font-size: 0.95rem;
+    }
+    
+    .action-btn.primary {
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    }
+    
+    .action-btn.secondary {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid var(--glass-border);
+    }
+    
+    .action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
+        color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .empty-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<h1>Welcome to Tunetrails!</h1>
-<p>This is your blank user dashboard page.</p>
+<div class="dashboard-header">
+    <h1 class="welcome-message">Welcome back, {{ user.get_full_name|default:user.username }}! 🎵</h1>
+    <p class="welcome-subtitle">Here's your learning overview and progress summary</p>
+</div>
+
+<div class="dashboard-grid">
+    <!-- Progress Overview Card -->
+    <div class="dashboard-card">
+        <div class="card-header">
+            <h3 class="card-title">Learning Progress</h3>
+            <div class="card-icon">
+                <i class="fas fa-chart-line"></i>
+            </div>
+        </div>
+        
+        <div class="progress-summary">
+            <div class="progress-item">
+                <div class="progress-label">
+                    <span>Beginner Guitar</span>
+                    <span>65%</span>
+                </div>
+                <div class="progress-bar-small">
+                    <div class="progress-fill-small" style="width: 65%;"></div>
+                </div>
+            </div>
+            
+            <div class="progress-item">
+                <div class="progress-label">
+                    <span>Music Theory</span>
+                    <span>30%</span>
+                </div>
+                <div class="progress-bar-small">
+                    <div class="progress-fill-small" style="width: 30%;"></div>
+                </div>
+            </div>
+            
+            <div class="progress-item">
+                <div class="progress-label">
+                    <span>Ear Training</span>
+                    <span>45%</span>
+                </div>
+                <div class="progress-bar-small">
+                    <div class="progress-fill-small" style="width: 45%;"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="quick-stats">
+            <div class="stat-box">
+                <div class="stat-number">24</div>
+                <div class="stat-label">Lessons Done</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">87%</div>
+                <div class="stat-label">Avg. Score</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Activity Card -->
+    <div class="dashboard-card">
+        <div class="card-header">
+            <h3 class="card-title">Recent Activity</h3>
+            <div class="card-icon">
+                <i class="fas fa-history"></i>
+            </div>
+        </div>
+        
+        <div class="activity-list">
+            <div class="activity-item">
+                <div class="activity-icon">
+                    <i class="fas fa-play-circle"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-title">Completed Guitar Lesson #3</div>
+                    <div class="activity-time">Today, 10:30 AM</div>
+                </div>
+            </div>
+            
+            <div class="activity-item">
+                <div class="activity-icon">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-title">Earned "Chord Master" Badge</div>
+                    <div class="activity-time">Yesterday, 3:45 PM</div>
+                </div>
+            </div>
+            
+            <div class="activity-item">
+                <div class="activity-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-title">Personal Best: 95% Accuracy</div>
+                    <div class="activity-time">2 days ago</div>
+                </div>
+            </div>
+            
+            <div class="activity-item">
+                <div class="activity-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-title">Joined Study Session</div>
+                    <div class="activity-time">3 days ago</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="action-buttons">
+            <button class="action-btn primary" onclick="window.location.href='{% url 'dashboard:lessons' %}'">
+                <i class="fas fa-play me-2"></i>Continue Learning
+            </button>
+            <button class="action-btn secondary" onclick="window.location.href='{% url 'dashboard:practice' %}'">
+                <i class="fas fa-dumbbell me-2"></i>Practice Now
+            </button>
+        </div>
+    </div>
+    
+    <!-- Practice Streak Card -->
+    <div class="dashboard-card">
+        <div class="card-header">
+            <h3 class="card-title">Practice Streak</h3>
+            <div class="card-icon">
+                <i class="fas fa-fire"></i>
+            </div>
+        </div>
+        
+        <div class="streak-container">
+            <div class="streak-number">14</div>
+            <div class="streak-label">DAY STREAK</div>
+            <div class="streak-subtitle">Keep it up! You're on fire! 🔥</div>
+            
+            <div class="calendar-grid">
+                <div class="weekday-label">M</div>
+                <div class="weekday-label">T</div>
+                <div class="weekday-label">W</div>
+                <div class="weekday-label">T</div>
+                <div class="weekday-label">F</div>
+                <div class="weekday-label">S</div>
+                <div class="weekday-label">S</div>
+                
+                <!-- Calendar days -->
+                <div class="calendar-day day-inactive">26</div>
+                <div class="calendar-day day-inactive">27</div>
+                <div class="calendar-day day-inactive">28</div>
+                <div class="calendar-day day-active">1</div>
+                <div class="calendar-day day-active">2</div>
+                <div class="calendar-day day-active">3</div>
+                <div class="calendar-day day-active">4</div>
+                
+                <div class="calendar-day day-active">5</div>
+                <div class="calendar-day day-active">6</div>
+                <div class="calendar-day day-active">7</div>
+                <div class="calendar-day day-active">8</div>
+                <div class="calendar-day day-active">9</div>
+                <div class="calendar-day day-active">10</div>
+                <div class="calendar-day day-active">11</div>
+                
+                <div class="calendar-day day-active">12</div>
+                <div class="calendar-day day-active">13</div>
+                <div class="calendar-day day-active">14</div>
+                <div class="calendar-day">15</div>
+                <div class="calendar-day">16</div>
+                <div class="calendar-day">17</div>
+                <div class="calendar-day">18</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recommendations Card -->
+    <div class="dashboard-card">
+        <div class="card-header">
+            <h3 class="card-title">Recommended For You</h3>
+            <div class="card-icon">
+                <i class="fas fa-lightbulb"></i>
+            </div>
+        </div>
+        
+        <div class="recommendation-list">
+            <div class="recommendation-item">
+                <div class="recommendation-title">Practice Chord Transitions</div>
+                <div class="recommendation-desc">
+                    Based on your recent progress, spend 15 minutes on smooth chord 
+                    transitions between G, C, and D chords.
+                </div>
+                <button class="btn btn-primary-custom" style="padding: 0.6rem 1.5rem; font-size: 0.9rem;">
+                    <i class="fas fa-play me-2"></i>Start Practice
+                </button>
+            </div>
+            
+            <div class="recommendation-item">
+                <div class="recommendation-title">Try Intermediate Strumming</div>
+                <div class="recommendation-desc">
+                    You're ready to advance to more complex strumming patterns. 
+                    Try Lesson 4 in your guitar course.
+                </div>
+                <button class="btn btn-primary-custom" style="padding: 0.6rem 1.5rem; font-size: 0.9rem;">
+                    <i class="fas fa-arrow-right me-2"></i>Continue Course
+                </button>
+            </div>
+            
+            <div class="recommendation-item">
+                <div class="recommendation-title">Join Live Workshop</div>
+                <div class="recommendation-desc">
+                    "Blues Guitar Basics" workshop starts tomorrow at 7 PM. 
+                    Perfect for your skill level!
+                </div>
+                <button class="btn btn-primary-custom" style="padding: 0.6rem 1.5rem; font-size: 0.9rem;">
+                    <i class="fas fa-calendar-plus me-2"></i>RSVP Now
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Upcoming Schedule Card -->
+    <div class="dashboard-card">
+        <div class="card-header">
+            <h3 class="card-title">Today's Schedule</h3>
+            <div class="card-icon">
+                <i class="fas fa-calendar-alt"></i>
+            </div>
+        </div>
+        
+        <div class="activity-list">
+            <div class="activity-item">
+                <div class="activity-icon" style="background: linear-gradient(135deg, #4ecdc4, #2ecc71);">
+                    <i class="fas fa-walking"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-title">Warm-up Exercises</div>
+                    <div class="activity-time">10:00 AM - 10:15 AM</div>
+                </div>
+            </div>
+            
+            <div class="activity-item">
+                <div class="activity-icon" style="background: linear-gradient(135deg, var(--primary-color), #9b59b6);">
+                    <i class="fas fa-guitar"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-title">Guitar Practice</div>
+                    <div class="activity-time">10:15 AM - 11:00 AM</div>
+                </div>
+            </div>
+            
+            <div class="activity-item">
+                <div class="activity-icon" style="background: linear-gradient(135deg, #3498db, #2980b9);">
+                    <i class="fas fa-music"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-title">Music Theory Study</div>
+                    <div class="activity-time">2:00 PM - 3:00 PM</div>
+                </div>
+            </div>
+            
+            <div class="activity-item">
+                <div class="activity-icon" style="background: linear-gradient(135deg, #e74c3c, #c0392b);">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-title">Group Practice Session</div>
+                    <div class="activity-time">7:00 PM - 8:30 PM</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="action-buttons">
+            <button class="action-btn secondary" style="flex: 1;">
+                <i class="fas fa-plus me-2"></i>Add Session
+            </button>
+        </div>
+    </div>
+    
+    <!-- Goals Card -->
+    <div class="dashboard-card">
+        <div class="card-header">
+            <h3 class="card-title">Monthly Goals</h3>
+            <div class="card-icon">
+                <i class="fas fa-bullseye"></i>
+            </div>
+        </div>
+        
+        <div class="progress-summary">
+            <div class="progress-item">
+                <div class="progress-label">
+                    <span>Complete 20 Lessons</span>
+                    <span>12/20</span>
+                </div>
+                <div class="progress-bar-small">
+                    <div class="progress-fill-small" style="width: 60%;"></div>
+                </div>
+            </div>
+            
+            <div class="progress-item">
+                <div class="progress-label">
+                    <span>Practice 30 Hours</span>
+                    <span>18/30</span>
+                </div>
+                <div class="progress-bar-small">
+                    <div class="progress-fill-small" style="width: 60%;"></div>
+                </div>
+            </div>
+            
+            <div class="progress-item">
+                <div class="progress-label">
+                    <span>Learn 3 New Songs</span>
+                    <span>2/3</span>
+                </div>
+                <div class="progress-bar-small">
+                    <div class="progress-fill-small" style="width: 67%;"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="fas fa-flag"></i>
+            </div>
+            <div>Set new goals to keep your motivation high!</div>
+            <button class="btn btn-outline-primary mt-2" style="padding: 0.7rem 1.5rem;">
+                <i class="fas fa-plus me-2"></i>Add Goal
+            </button>
+        </div>
+    </div>
+</div>
 {% endblock %}

@@ -1,6 +1,531 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Practice | Tunetrails{% endblock %}
+
+{% block extra_css %}
+<style>
+    .practice-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+    
+    .practice-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+    }
+    
+    .stat-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 16px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: var(--transition);
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--accent-color);
+    }
+    
+    .stat-icon {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+    
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-label {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 1rem;
+    }
+    
+    .practice-tools {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin: 3rem 0;
+    }
+    
+    .tool-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 2rem;
+        text-align: center;
+        transition: var(--transition);
+        position: relative;
+    }
+    
+    .tool-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+        border-radius: 20px 20px 0 0;
+    }
+    
+    .tool-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    }
+    
+    .tool-icon {
+        font-size: 3rem;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+    
+    .tool-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: white;
+    }
+    
+    .tool-description {
+        color: rgba(255, 255, 255, 0.8);
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+    
+    .metronome-container {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 2.5rem;
+        margin: 3rem 0;
+        text-align: center;
+    }
+    
+    .metronome-header {
+        margin-bottom: 2rem;
+    }
+    
+    .metronome-display {
+        font-size: 4rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 2rem;
+        font-family: 'Montserrat', sans-serif;
+    }
+    
+    .bpm-controls {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .bpm-btn {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        border: none;
+        border-radius: 50%;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+    
+    .bpm-btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 8px 20px rgba(138, 43, 226, 0.3);
+    }
+    
+    .bpm-value {
+        font-size: 2rem;
+        color: white;
+        font-weight: 600;
+        min-width: 100px;
+    }
+    
+    .controls {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 2rem;
+    }
+    
+    .timer-container {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 2.5rem;
+        margin: 3rem 0;
+        text-align: center;
+    }
+    
+    .timer-display {
+        font-size: 4rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 2rem;
+        font-family: 'Montserrat', sans-serif;
+    }
+    
+    .timer-controls {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 2rem;
+    }
+    
+    .timer-btn {
+        padding: 1rem 2rem;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: var(--transition);
+        border: none;
+    }
+    
+    .timer-btn.start {
+        background: linear-gradient(135deg, var(--accent-color), #2ecc71);
+        color: white;
+    }
+    
+    .timer-btn.pause {
+        background: linear-gradient(135deg, #ffc107, #ff9800);
+        color: white;
+    }
+    
+    .timer-btn.reset {
+        background: linear-gradient(135deg, var(--secondary-color), #e74c3c);
+        color: white;
+    }
+    
+    .timer-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    .practice-schedule {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 2.5rem;
+        margin-top: 3rem;
+    }
+    
+    .schedule-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+    
+    .schedule-list {
+        display: grid;
+        gap: 1rem;
+    }
+    
+    .schedule-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        transition: var(--transition);
+    }
+    
+    .schedule-item:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .schedule-time {
+        color: white;
+        font-weight: 600;
+    }
+    
+    .schedule-activity {
+        color: rgba(255, 255, 255, 0.9);
+    }
+    
+    .schedule-duration {
+        color: var(--accent-color);
+        font-weight: 500;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<h1>Welcome to Tunetrails!</h1>
-<p>This is your blank practice page.</p>
+<div class="practice-header">
+    <h1 class="page-title">Practice Studio</h1>
+    <p class="page-subtitle">
+        Use our advanced practice tools to improve your skills, track your progress, 
+        and achieve your musical goals.
+    </p>
+</div>
+
+<div class="practice-stats">
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="far fa-clock"></i>
+        </div>
+        <div class="stat-value">45m</div>
+        <div class="stat-label">Today's Practice</div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="fas fa-fire"></i>
+        </div>
+        <div class="stat-value">14</div>
+        <div class="stat-label">Day Streak</div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="fas fa-trophy"></i>
+        </div>
+        <div class="stat-value">87%</div>
+        <div class="stat-label">Accuracy Rate</div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="fas fa-chart-line"></i>
+        </div>
+        <div class="stat-value">+32%</div>
+        <div class="stat-label">Progress This Month</div>
+    </div>
+</div>
+
+<div class="practice-tools">
+    <div class="tool-card">
+        <div class="tool-icon">
+            <i class="fas fa-sliders-h"></i>
+        </div>
+        <h3 class="tool-title">Smart Metronome</h3>
+        <p class="tool-description">
+            Adjustable tempo with visual and audio cues to improve your timing 
+            and rhythm precision.
+        </p>
+        <button class="btn btn-primary-custom" onclick="document.getElementById('metronomeSection').scrollIntoView()">
+            <i class="fas fa-play me-2"></i>Use Metronome
+        </button>
+    </div>
+    
+    <div class="tool-card">
+        <div class="tool-icon">
+            <i class="fas fa-stopwatch"></i>
+        </div>
+        <h3 class="tool-title">Practice Timer</h3>
+        <p class="tool-description">
+            Set custom practice sessions with intervals and breaks to optimize 
+            your learning efficiency.
+        </p>
+        <button class="btn btn-primary-custom" onclick="document.getElementById('timerSection').scrollIntoView()">
+            <i class="fas fa-stopwatch me-2"></i>Start Timer
+        </button>
+    </div>
+    
+    <div class="tool-card">
+        <div class="tool-icon">
+            <i class="fas fa-chart-bar"></i>
+        </div>
+        <h3 class="tool-title">Progress Tracker</h3>
+        <p class="tool-description">
+            Visualize your improvement over time with detailed analytics and 
+            personalized insights.
+        </p>
+        <button class="btn btn-primary-custom">
+            <i class="fas fa-chart-line me-2"></i>View Analytics
+        </button>
+    </div>
+</div>
+
+<div class="metronome-container" id="metronomeSection">
+    <div class="metronome-header">
+        <h2 style="color: white; margin-bottom: 0.5rem;">Smart Metronome</h2>
+        <p class="text-light">Perfect your timing and rhythm</p>
+    </div>
+    
+    <div class="metronome-display">
+        <span id="bpmDisplay">120</span> BPM
+    </div>
+    
+    <div class="bpm-controls">
+        <button class="bpm-btn" onclick="changeBPM(-10)">-10</button>
+        <button class="bpm-btn" onclick="changeBPM(-5)">-5</button>
+        <div class="bpm-value" id="currentBPM">120</div>
+        <button class="bpm-btn" onclick="changeBPM(5)">+5</button>
+        <button class="bpm-btn" onclick="changeBPM(10)">+10</button>
+    </div>
+    
+    <div class="controls">
+        <button class="btn btn-primary-custom" id="startMetronome">
+            <i class="fas fa-play me-2"></i>Start
+        </button>
+        <button class="btn btn-outline-primary" id="stopMetronome">
+            <i class="fas fa-stop me-2"></i>Stop
+        </button>
+    </div>
+</div>
+
+<div class="timer-container" id="timerSection">
+    <div class="metronome-header">
+        <h2 style="color: white; margin-bottom: 0.5rem;">Practice Timer</h2>
+        <p class="text-light">Structured practice sessions with breaks</p>
+    </div>
+    
+    <div class="timer-display" id="timerDisplay">25:00</div>
+    
+    <div class="timer-controls">
+        <button class="timer-btn start" onclick="startTimer()">
+            <i class="fas fa-play me-2"></i>Start
+        </button>
+        <button class="timer-btn pause" onclick="pauseTimer()">
+            <i class="fas fa-pause me-2"></i>Pause
+        </button>
+        <button class="timer-btn reset" onclick="resetTimer()">
+            <i class="fas fa-redo me-2"></i>Reset
+        </button>
+    </div>
+</div>
+
+<div class="practice-schedule">
+    <div class="schedule-header">
+        <h2 style="color: white; margin: 0;">Today's Practice Schedule</h2>
+        <span class="text-light">Recommended</span>
+    </div>
+    
+    <div class="schedule-list">
+        <div class="schedule-item">
+            <span class="schedule-time">10:00 AM</span>
+            <span class="schedule-activity">Warm-up Exercises</span>
+            <span class="schedule-duration">15 min</span>
+        </div>
+        <div class="schedule-item">
+            <span class="schedule-time">10:15 AM</span>
+            <span class="schedule-activity">Scale Practice</span>
+            <span class="schedule-duration">20 min</span>
+        </div>
+        <div class="schedule-item">
+            <span class="schedule-time">10:35 AM</span>
+            <span class="schedule-activity">Chord Progressions</span>
+            <span class="schedule-duration">25 min</span>
+        </div>
+        <div class="schedule-item">
+            <span class="schedule-time">11:00 AM</span>
+            <span class="schedule-activity">Song Practice</span>
+            <span class="schedule-duration">30 min</span>
+        </div>
+        <div class="schedule-item">
+            <span class="schedule-time">11:30 AM</span>
+            <span class="schedule-activity">Creative Improvisation</span>
+            <span class="schedule-duration">20 min</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentBPM = 120;
+    let metronomeInterval;
+    let isMetronomeRunning = false;
+    
+    function changeBPM(amount) {
+        currentBPM = Math.max(40, Math.min(240, currentBPM + amount));
+        document.getElementById('bpmDisplay').textContent = currentBPM;
+        document.getElementById('currentBPM').textContent = currentBPM;
+        
+        if (isMetronomeRunning) {
+            clearInterval(metronomeInterval);
+            startMetronome();
+        }
+    }
+    
+    function startMetronome() {
+        if (!isMetronomeRunning) {
+            isMetronomeRunning = true;
+            const interval = (60000 / currentBPM) / 2;
+            let beat = 0;
+            
+            metronomeInterval = setInterval(() => {
+                beat = (beat + 1) % 4;
+                document.getElementById('bpmDisplay').style.color = 
+                    beat === 0 ? 'var(--accent-color)' : 'white';
+            }, interval);
+        }
+    }
+    
+    function stopMetronome() {
+        clearInterval(metronomeInterval);
+        isMetronomeRunning = false;
+        document.getElementById('bpmDisplay').style.color = 'white';
+    }
+    
+    document.getElementById('startMetronome').addEventListener('click', startMetronome);
+    document.getElementById('stopMetronome').addEventListener('click', stopMetronome);
+    
+    // Timer functionality
+    let timerTime = 25 * 60;
+    let timerInterval;
+    let isTimerRunning = false;
+    
+    function updateTimerDisplay() {
+        const minutes = Math.floor(timerTime / 60);
+        const seconds = timerTime % 60;
+        document.getElementById('timerDisplay').textContent = 
+            `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+    
+    function startTimer() {
+        if (!isTimerRunning) {
+            isTimerRunning = true;
+            timerInterval = setInterval(() => {
+                if (timerTime > 0) {
+                    timerTime--;
+                    updateTimerDisplay();
+                } else {
+                    clearInterval(timerInterval);
+                    isTimerRunning = false;
+                    alert('Practice session complete! 🎉');
+                }
+            }, 1000);
+        }
+    }
+    
+    function pauseTimer() {
+        clearInterval(timerInterval);
+        isTimerRunning = false;
+    }
+    
+    function resetTimer() {
+        clearInterval(timerInterval);
+        isTimerRunning = false;
+        timerTime = 25 * 60;
+        updateTimerDisplay();
+    }
+    
+    updateTimerDisplay();
+</script>
 {% endblock %}

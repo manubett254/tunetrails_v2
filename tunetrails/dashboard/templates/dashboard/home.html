@@ -1,6 +1,231 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home | Tunetrails{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-section {
+        text-align: center;
+        padding: 4rem 0;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .hero-title {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 800;
+        font-size: 3.5rem;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        text-shadow: 0 4px 30px rgba(138, 43, 226, 0.3);
+    }
+    
+    .hero-subtitle {
+        font-size: 1.3rem;
+        color: rgba(255, 255, 255, 0.9);
+        max-width: 800px;
+        margin: 0 auto 3rem;
+        line-height: 1.6;
+    }
+    
+    .feature-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin: 3rem 0;
+    }
+    
+    .feature-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 2.5rem;
+        text-align: center;
+        transition: var(--transition);
+        position: relative;
+    }
+    
+    .feature-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+        border-radius: 20px 20px 0 0;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    }
+    
+    .feature-icon {
+        font-size: 3rem;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+    
+    .feature-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: white;
+    }
+    
+    .feature-description {
+        color: rgba(255, 255, 255, 0.8);
+        line-height: 1.6;
+    }
+    
+    .cta-section {
+        text-align: center;
+        padding: 4rem 0;
+        background: linear-gradient(135deg, rgba(138, 43, 226, 0.1), rgba(78, 205, 196, 0.1));
+        border-radius: 24px;
+        margin: 3rem 0;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .cta-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        color: white;
+    }
+    
+    .cta-buttons {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        margin-top: 2rem;
+    }
+    
+    .stats-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 2rem;
+        margin: 4rem 0;
+    }
+    
+    .stat-card {
+        text-align: center;
+        padding: 2rem;
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border-radius: 16px;
+        border: 1px solid var(--glass-border);
+    }
+    
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-label {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 1.1rem;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<h1>Welcome to Tunetrails!</h1>
-<p>This is your blank home page.</p>
+<div class="hero-section">
+    <h1 class="hero-title">Master Music. Your Way.</h1>
+    <p class="hero-subtitle">
+        Join thousands of musicians on Tunetrails - the premier platform for interactive music learning. 
+        From beginner to pro, we've got the perfect path for your musical journey.
+    </p>
+    
+    <div class="cta-buttons">
+        <a href="{% url 'dashboard:courses' %}" class="btn btn-primary-custom">
+            <i class="fas fa-play me-2"></i>Start Learning Free
+        </a>
+        <a href="{% url 'dashboard:signup' %}" class="btn btn-outline-primary">
+            <i class="fas fa-user-plus me-2"></i>Create Account
+        </a>
+    </div>
+</div>
+
+<div class="stats-container">
+    <div class="stat-card">
+        <div class="stat-number">10,000+</div>
+        <div class="stat-label">Active Learners</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">500+</div>
+        <div class="stat-label">Courses & Lessons</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">50+</div>
+        <div class="stat-label">Expert Instructors</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">24/7</div>
+        <div class="stat-label">Practice Support</div>
+    </div>
+</div>
+
+<div class="feature-cards">
+    <div class="feature-card">
+        <div class="feature-icon">
+            <i class="fas fa-guitar"></i>
+        </div>
+        <h3 class="feature-title">Interactive Courses</h3>
+        <p class="feature-description">
+            Learn at your own pace with our interactive video courses designed by professional musicians.
+        </p>
+    </div>
+    
+    <div class="feature-card">
+        <div class="feature-icon">
+            <i class="fas fa-music"></i>
+        </div>
+        <h3 class="feature-title">Personalized Practice</h3>
+        <p class="feature-description">
+            Get customized practice routines that adapt to your skill level and learning goals.
+        </p>
+    </div>
+    
+    <div class="feature-card">
+        <div class="feature-icon">
+            <i class="fas fa-users"></i>
+        </div>
+        <h3 class="feature-title">Community Learning</h3>
+        <p class="feature-description">
+            Connect with fellow musicians, share progress, and get feedback from peers.
+        </p>
+    </div>
+</div>
+
+<div class="cta-section">
+    <h2 class="cta-title">Ready to Start Your Musical Journey?</h2>
+    <p class="hero-subtitle">
+        Join Tunetrails today and get access to our complete library of music courses, 
+        practice tools, and a supportive community of musicians.
+    </p>
+    <div class="cta-buttons">
+        <a href="{% url 'dashboard:signup' %}" class="btn btn-primary-custom" style="padding: 1rem 3rem;">
+            <i class="fas fa-rocket me-2"></i>Get Started Free
+        </a>
+        <a href="{% url 'dashboard:courses' %}" class="btn btn-outline-primary" style="padding: 1rem 3rem;">
+            <i class="fas fa-eye me-2"></i>View Courses
+        </a>
+    </div>
+</div>
 {% endblock %}

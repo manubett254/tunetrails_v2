@@ -1,6 +1,364 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Courses | Tunetrails{% endblock %}
+
+{% block extra_css %}
+<style>
+    .courses-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+    
+    .courses-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 2rem;
+        margin: 2rem 0;
+    }
+    
+    .course-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        overflow: hidden;
+        transition: var(--transition);
+        position: relative;
+    }
+    
+    .course-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+    }
+    
+    .course-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+    }
+    
+    .course-image {
+        height: 200px;
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4rem;
+        color: white;
+    }
+    
+    .course-content {
+        padding: 2rem;
+    }
+    
+    .course-category {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--accent-color);
+        padding: 0.4rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        margin-bottom: 1rem;
+    }
+    
+    .course-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: white;
+        line-height: 1.4;
+    }
+    
+    .course-description {
+        color: rgba(255, 255, 255, 0.8);
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+    
+    .course-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--glass-border);
+    }
+    
+    .course-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.9rem;
+    }
+    
+    .course-info i {
+        color: var(--accent-color);
+    }
+    
+    .course-difficulty {
+        display: inline-block;
+        padding: 0.3rem 0.8rem;
+        border-radius: 12px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+    
+    .difficulty-beginner {
+        background: rgba(78, 205, 196, 0.2);
+        color: var(--accent-color);
+    }
+    
+    .difficulty-intermediate {
+        background: rgba(255, 193, 7, 0.2);
+        color: #ffc107;
+    }
+    
+    .difficulty-advanced {
+        background: rgba(255, 107, 107, 0.2);
+        color: var(--secondary-color);
+    }
+    
+    .filter-section {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 16px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .filter-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .filter-options {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    
+    .filter-btn {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid var(--glass-border);
+        color: white;
+        padding: 0.6rem 1.5rem;
+        border-radius: 12px;
+        transition: var(--transition);
+        cursor: pointer;
+    }
+    
+    .filter-btn:hover,
+    .filter-btn.active {
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        border-color: transparent;
+    }
+    
+    .search-box {
+        position: relative;
+        margin-bottom: 2rem;
+    }
+    
+    .search-box input {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid var(--glass-border);
+        border-radius: 12px;
+        padding: 1rem 1rem 1rem 3rem;
+        color: white;
+        font-size: 1rem;
+        transition: var(--transition);
+    }
+    
+    .search-box input:focus {
+        outline: none;
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 3px rgba(78, 205, 196, 0.2);
+    }
+    
+    .search-box i {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: rgba(255, 255, 255, 0.7);
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<h1>Welcome to Tunetrails!</h1>
-<p>This is your blank courses page.</p>
+<div class="courses-header">
+    <h1 class="page-title">Explore Our Courses</h1>
+    <p class="page-subtitle">
+        Discover the perfect course for your musical journey. From guitar to piano, 
+        beginner to advanced - we have something for everyone.
+    </p>
+</div>
+
+<div class="filter-section">
+    <div class="filter-header">
+        <h3 style="color: white; margin: 0;">Filter Courses</h3>
+        <span class="text-light">{{ courses|length }} courses available</span>
+    </div>
+    
+    <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Search courses...">
+    </div>
+    
+    <div class="filter-options">
+        <button class="filter-btn active" data-filter="all">All Courses</button>
+        <button class="filter-btn" data-filter="guitar">Guitar</button>
+        <button class="filter-btn" data-filter="piano">Piano</button>
+        <button class="filter-btn" data-filter="vocals">Vocals</button>
+        <button class="filter-btn" data-filter="drums">Drums</button>
+        <button class="filter-btn" data-filter="theory">Music Theory</button>
+        <button class="filter-btn" data-filter="beginner">Beginner</button>
+        <button class="filter-btn" data-filter="intermediate">Intermediate</button>
+        <button class="filter-btn" data-filter="advanced">Advanced</button>
+    </div>
+</div>
+
+<div class="courses-grid">
+    <!-- Course 1 -->
+    <div class="course-card">
+        <div class="course-image">
+            <i class="fas fa-guitar"></i>
+        </div>
+        <div class="course-content">
+            <span class="course-category">Guitar</span>
+            <h3 class="course-title">Beginner Guitar Mastery</h3>
+            <p class="course-description">
+                Learn guitar from scratch with our comprehensive beginner course. 
+                Master chords, strumming patterns, and play your first songs.
+            </p>
+            <div class="course-meta">
+                <div class="course-info">
+                    <span><i class="far fa-clock"></i> 8 weeks</span>
+                    <span><i class="fas fa-video"></i> 40 lessons</span>
+                </div>
+                <span class="course-difficulty difficulty-beginner">Beginner</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Course 2 -->
+    <div class="course-card">
+        <div class="course-image">
+            <i class="fas fa-drum"></i>
+        </div>
+        <div class="course-content">
+            <span class="course-category">Drums</span>
+            <h3 class="course-title">Rock Drumming Fundamentals</h3>
+            <p class="course-description">
+                Master essential rock drumming techniques, fills, and rhythms to 
+                build a solid foundation for any genre.
+            </p>
+            <div class="course-meta">
+                <div class="course-info">
+                    <span><i class="far fa-clock"></i> 10 weeks</span>
+                    <span><i class="fas fa-video"></i> 50 lessons</span>
+                </div>
+                <span class="course-difficulty difficulty-intermediate">Intermediate</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Course 3 -->
+    <div class="course-card">
+        <div class="course-image">
+            <i class="fas fa-microphone-alt"></i>
+        </div>
+        <div class="course-content">
+            <span class="course-category">Vocals</span>
+            <h3 class="course-title">Vocal Techniques & Harmony</h3>
+            <p class="course-description">
+                Develop your singing voice with proper breathing, pitch control, 
+                and harmony techniques for beautiful vocals.
+            </p>
+            <div class="course-meta">
+                <div class="course-info">
+                    <span><i class="far fa-clock"></i> 12 weeks</span>
+                    <span><i class="fas fa-video"></i> 60 lessons</span>
+                </div>
+                <span class="course-difficulty difficulty-intermediate">Intermediate</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Course 4 -->
+    <div class="course-card">
+        <div class="course-image">
+            <i class="fas fa-music"></i>
+        </div>
+        <div class="course-content">
+            <span class="course-category">Music Theory</span>
+            <h3 class="course-title">Advanced Music Theory & Composition</h3>
+            <p class="course-description">
+                Deep dive into advanced music theory concepts and learn to compose 
+                original music across various genres.
+            </p>
+            <div class="course-meta">
+                <div class="course-info">
+                    <span><i class="far fa-clock"></i> 16 weeks</span>
+                    <span><i class="fas fa-video"></i> 80 lessons</span>
+                </div>
+                <span class="course-difficulty difficulty-advanced">Advanced</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Course 5 -->
+    <div class="course-card">
+        <div class="course-image">
+            <i class="fas fa-piano"></i>
+        </div>
+        <div class="course-content">
+            <span class="course-category">Piano</span>
+            <h3 class="course-title">Jazz Piano Improvisation</h3>
+            <p class="course-description">
+                Learn the art of jazz improvisation, chord voicings, and soloing 
+                techniques to master jazz piano.
+            </p>
+            <div class="course-meta">
+                <div class="course-info">
+                    <span><i class="far fa-clock"></i> 14 weeks</span>
+                    <span><i class="fas fa-video"></i> 70 lessons</span>
+                </div>
+                <span class="course-difficulty difficulty-advanced">Advanced</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Course 6 -->
+    <div class="course-card">
+        <div class="course-image">
+            <i class="fas fa-guitar"></i>
+        </div>
+        <div class="course-content">
+            <span class="course-category">Guitar</span>
+            <h3 class="course-title">Blues Guitar Soloing</h3>
+            <p class="course-description">
+                Master the soulful art of blues guitar soloing with scales, 
+                techniques, and classic blues licks.
+            </p>
+            <div class="course-meta">
+                <div class="course-info">
+                    <span><i class="far fa-clock"></i> 8 weeks</span>
+                    <span><i class="fas fa-video"></i> 40 lessons</span>
+                </div>
+                <span class="course-difficulty difficulty-intermediate">Intermediate</span>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

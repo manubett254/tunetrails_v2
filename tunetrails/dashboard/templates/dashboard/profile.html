@@ -1,6 +1,557 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Profile | Tunetrails{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+    
+    .profile-container {
+        display: grid;
+        grid-template-columns: 350px 1fr;
+        gap: 3rem;
+    }
+    
+    @media (max-width: 992px) {
+        .profile-container {
+            grid-template-columns: 1fr;
+        }
+    }
+    
+    .profile-sidebar {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 2rem;
+        height: fit-content;
+    }
+    
+    .profile-avatar {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    
+    .avatar-image {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid transparent;
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color)) border-box;
+        margin: 0 auto 1.5rem;
+        display: block;
+    }
+    
+    .avatar-placeholder {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        color: white;
+        font-size: 3rem;
+    }
+    
+    .profile-name {
+        color: white;
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    
+    .profile-email {
+        color: rgba(255, 255, 255, 0.7);
+        margin-bottom: 1.5rem;
+    }
+    
+    .profile-meta {
+        display: grid;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        color: rgba(255, 255, 255, 0.9);
+    }
+    
+    .meta-item i {
+        color: var(--accent-color);
+        width: 20px;
+    }
+    
+    .profile-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .profile-main {
+        display: grid;
+        gap: 2rem;
+    }
+    
+    .profile-section {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 2rem;
+    }
+    
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+    
+    .section-title {
+        color: white;
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin: 0;
+    }
+    
+    .edit-btn {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid var(--glass-border);
+        color: white;
+        padding: 0.6rem 1.5rem;
+        border-radius: 12px;
+        transition: var(--transition);
+        cursor: pointer;
+    }
+    
+    .edit-btn:hover {
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        border-color: transparent;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-item {
+        text-align: center;
+        padding: 1.5rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 16px;
+    }
+    
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-label {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.95rem;
+    }
+    
+    .badges-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .badge {
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        color: white;
+        padding: 0.8rem 1.5rem;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+    
+    .badge i {
+        font-size: 1.2rem;
+    }
+    
+    .progress-chart {
+        margin-top: 2rem;
+    }
+    
+    .chart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+    
+    .chart-title {
+        color: white;
+        font-weight: 600;
+    }
+    
+    .chart-bar {
+        height: 10px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 5px;
+        overflow: hidden;
+        margin-bottom: 0.5rem;
+    }
+    
+    .chart-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+        border-radius: 5px;
+    }
+    
+    .chart-labels {
+        display: flex;
+        justify-content: space-between;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.9rem;
+    }
+    
+    .recent-activity {
+        display: grid;
+        gap: 1rem;
+    }
+    
+    .activity-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        transition: var(--transition);
+    }
+    
+    .activity-item:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .activity-icon {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+    }
+    
+    .activity-content {
+        flex: 1;
+    }
+    
+    .activity-title {
+        color: white;
+        font-weight: 600;
+        margin-bottom: 0.2rem;
+    }
+    
+    .activity-time {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.9rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+        display: block;
+        color: white;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+    }
+    
+    .form-control {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid var(--glass-border);
+        border-radius: 12px;
+        padding: 1rem;
+        color: white;
+        font-size: 1rem;
+        transition: var(--transition);
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 3px rgba(78, 205, 196, 0.2);
+    }
+    
+    .save-btn {
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+    
+    .save-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(138, 43, 226, 0.3);
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<h1>Welcome to Tunetrails!</h1>
-<p>This is your blank profile page.</p>
+<div class="profile-header">
+    <h1 class="page-title">My Profile</h1>
+    <p class="page-subtitle">
+        Manage your account, track your progress, and personalize your learning experience.
+    </p>
+</div>
+
+<div class="profile-container">
+    <!-- Sidebar -->
+    <div class="profile-sidebar">
+        <div class="profile-avatar">
+            {% if user.socialaccount_set.all.0.get_avatar_url %}
+                <img src="{{ user.socialaccount_set.all.0.get_avatar_url }}" alt="{{ user.username }}" class="avatar-image">
+            {% else %}
+                <div class="avatar-placeholder">
+                    <i class="fas fa-user"></i>
+                </div>
+            {% endif %}
+            <h2 class="profile-name">{{ user.get_full_name|default:user.username }}</h2>
+            <div class="profile-email">{{ user.email }}</div>
+        </div>
+        
+        <div class="profile-meta">
+            <div class="meta-item">
+                <i class="fas fa-calendar"></i>
+                <span>Member since: {{ user.date_joined|date:"F Y" }}</span>
+            </div>
+            <div class="meta-item">
+                <i class="fas fa-music"></i>
+                <span>Primary instrument: Guitar</span>
+            </div>
+            <div class="meta-item">
+                <i class="fas fa-trophy"></i>
+                <span>Level: Intermediate</span>
+            </div>
+            <div class="meta-item">
+                <i class="fas fa-fire"></i>
+                <span>Current streak: 14 days</span>
+            </div>
+        </div>
+        
+        <div class="profile-actions">
+            <button class="btn btn-primary-custom" onclick="scrollToSection('editSection')">
+                <i class="fas fa-edit me-2"></i>Edit Profile
+            </button>
+            <button class="btn btn-outline-primary">
+                <i class="fas fa-download me-2"></i>Export Data
+            </button>
+            <button class="btn btn-outline-primary">
+                <i class="fas fa-cog me-2"></i>Settings
+            </button>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="profile-main">
+        <!-- Stats Section -->
+        <div class="profile-section">
+            <div class="section-header">
+                <h3 class="section-title">Learning Statistics</h3>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value">128</div>
+                    <div class="stat-label">Total Hours Practiced</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">87%</div>
+                    <div class="stat-label">Course Completion</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">24</div>
+                    <div class="stat-label">Lessons Completed</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">8</div>
+                    <div class="stat-label">Badges Earned</div>
+                </div>
+            </div>
+            
+            <div class="progress-chart">
+                <div class="chart-header">
+                    <div class="chart-title">Weekly Progress</div>
+                    <div class="text-light">+15% this week</div>
+                </div>
+                <div class="chart-bar">
+                    <div class="chart-fill" style="width: 75%;"></div>
+                </div>
+                <div class="chart-labels">
+                    <span>Mon</span>
+                    <span>Tue</span>
+                    <span>Wed</span>
+                    <span>Thu</span>
+                    <span>Fri</span>
+                    <span>Sat</span>
+                    <span>Sun</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Achievements Section -->
+        <div class="profile-section">
+            <div class="section-header">
+                <h3 class="section-title">Achievements & Badges</h3>
+            </div>
+            
+            <div class="badges-container">
+                <div class="badge">
+                    <i class="fas fa-fire"></i>
+                    <span>7-Day Streak</span>
+                </div>
+                <div class="badge">
+                    <i class="fas fa-guitar"></i>
+                    <span>First Song Mastered</span>
+                </div>
+                <div class="badge">
+                    <i class="fas fa-trophy"></i>
+                    <span>Course Completion</span>
+                </div>
+                <div class="badge">
+                    <i class="fas fa-star"></i>
+                    <span>Perfect Practice</span>
+                </div>
+                <div class="badge">
+                    <i class="fas fa-users"></i>
+                    <span>Community Helper</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Activity -->
+        <div class="profile-section">
+            <div class="section-header">
+                <h3 class="section-title">Recent Activity</h3>
+            </div>
+            
+            <div class="recent-activity">
+                <div class="activity-item">
+                    <div class="activity-icon">
+                        <i class="fas fa-play-circle"></i>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-title">Completed Lesson: Basic Chords</div>
+                        <div class="activity-time">2 hours ago</div>
+                    </div>
+                </div>
+                
+                <div class="activity-item">
+                    <div class="activity-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-title">Earned "Perfect Practice" Badge</div>
+                        <div class="activity-time">Yesterday</div>
+                    </div>
+                </div>
+                
+                <div class="activity-item">
+                    <div class="activity-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-title">Personal Best: 95% Accuracy</div>
+                        <div class="activity-time">2 days ago</div>
+                    </div>
+                </div>
+                
+                <div class="activity-item">
+                    <div class="activity-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-title">Joined "Guitar Basics" Study Group</div>
+                        <div class="activity-time">3 days ago</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Edit Profile Form -->
+        <div class="profile-section" id="editSection">
+            <div class="section-header">
+                <h3 class="section-title">Edit Profile</h3>
+            </div>
+            
+            <form>
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" class="form-control" value="{{ user.get_full_name|default:user.username }}">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" class="form-control" value="{{ user.email }}">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Primary Instrument</label>
+                    <select class="form-control">
+                        <option>Guitar</option>
+                        <option>Piano</option>
+                        <option>Drums</option>
+                        <option>Vocals</option>
+                        <option>Bass</option>
+                        <option>Violin</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Skill Level</label>
+                    <select class="form-control">
+                        <option>Beginner</option>
+                        <option>Intermediate</option>
+                        <option>Advanced</option>
+                        <option>Professional</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Bio</label>
+                    <textarea class="form-control" rows="4" placeholder="Tell us about your musical journey..."></textarea>
+                </div>
+                
+                <button type="submit" class="save-btn">
+                    <i class="fas fa-save me-2"></i>Save Changes
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function scrollToSection(sectionId) {
+        document.getElementById(sectionId).scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+    }
+</script>
 {% endblock %}
