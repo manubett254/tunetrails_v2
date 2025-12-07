@@ -1,0 +1,545 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Login | Tunetrails{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Login page specific styles */
+    .login-page {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 15px;
+    }
+    
+    .login-card {
+        background-color: rgba(255, 255, 255, 0.97);
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        width: 100%;
+        max-width: 420px;
+        padding: 2rem 1.8rem;
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        max-height: 95vh;
+        overflow-y: auto;
+    }
+    
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    .login-card::-webkit-scrollbar {
+        display: none;
+    }
+    
+    /* Hide scrollbar for IE, Edge and Firefox */
+    .login-card {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+    }
+    
+    .login-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    }
+    
+    .logo-section {
+        text-align: center;
+        margin-bottom: 1.2rem;
+    }
+    
+    .logo {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 0.8rem;
+    }
+    
+    .logo-icon {
+        color: var(--primary-color);
+        font-size: 1.8rem;
+        margin-right: 8px;
+    }
+    
+    .logo-text {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 1.6rem;
+        background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+    
+    .tagline {
+        color: var(--text-light);
+        font-size: 0.85rem;
+        margin-bottom: 0;
+        line-height: 1.2;
+    }
+    
+    .welcome-title {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 600;
+        font-size: 1.3rem;
+        margin-bottom: 0.3rem;
+        color: var(--dark-color);
+        text-align: center;
+    }
+    
+    .welcome-subtitle {
+        color: var(--text-light);
+        text-align: center;
+        margin-bottom: 1.5rem;
+        font-size: 0.85rem;
+        line-height: 1.3;
+    }
+    
+    .input-group {
+        position: relative;
+    }
+    
+    .password-toggle {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: transparent;
+        border: none;
+        color: var(--text-light);
+        cursor: pointer;
+        z-index: 10;
+        font-size: 0.9rem;
+    }
+    
+    .btn-login {
+        background: linear-gradient(90deg, var(--primary-color), var(--primary-dark));
+        color: white;
+        border: none;
+        padding: 0.75rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        width: 100%;
+        transition: var(--transition);
+        margin-top: 0.3rem;
+    }
+    
+    .btn-login:hover {
+        background: linear-gradient(90deg, var(--primary-dark), var(--primary-color));
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(108, 99, 255, 0.3);
+    }
+    
+    .compact-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.2rem;
+    }
+    
+    .remember-check {
+        margin-bottom: 0;
+    }
+    
+    .divider {
+        display: flex;
+        align-items: center;
+        margin: 1.2rem 0;
+        color: var(--text-light);
+    }
+    
+    .divider::before, .divider::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background-color: #eee;
+    }
+    
+    .divider-text {
+        padding: 0 0.8rem;
+        font-size: 0.8rem;
+    }
+    
+    .social-login {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0.8rem;
+        margin-bottom: 1.2rem;
+    }
+    
+    .btn-social {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.65rem;
+        border-radius: 8px;
+        font-weight: 500;
+        font-size: 0.85rem;
+        transition: var(--transition);
+        border: 1px solid #ddd;
+        background-color: white;
+    }
+    
+    .btn-social:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+    }
+    
+    .btn-google {
+        color: #444;
+    }
+    
+    .btn-google:hover {
+        border-color: #DB4437;
+        color: #DB4437;
+    }
+    
+    .btn-github {
+        color: #444;
+    }
+    
+    .btn-github:hover {
+        border-color: #333;
+        color: #333;
+    }
+    
+    .social-icon {
+        margin-right: 8px;
+        font-size: 1rem;
+    }
+    
+    .additional-links {
+        text-align: center;
+        margin-top: 1.2rem;
+        font-size: 0.85rem;
+    }
+    
+    .forgot-password {
+        color: var(--primary-color);
+        text-decoration: none;
+        transition: var(--transition);
+        font-size: 0.85rem;
+    }
+    
+    .forgot-password:hover {
+        color: var(--primary-dark);
+        text-decoration: underline;
+    }
+    
+    .signup-link {
+        color: var(--text-light);
+        margin-bottom: 0;
+    }
+    
+    .signup-link a {
+        color: var(--primary-color);
+        font-weight: 500;
+        text-decoration: none;
+        transition: var(--transition);
+    }
+    
+    .signup-link a:hover {
+        color: var(--primary-dark);
+        text-decoration: underline;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 576px) {
+        .login-card {
+            padding: 1.5rem 1.2rem;
+            max-height: 90vh;
+        }
+        
+        .welcome-title {
+            font-size: 1.2rem;
+        }
+        
+        .logo-text {
+            font-size: 1.4rem;
+        }
+    }
+    
+    @media (max-width: 400px) {
+        .login-card {
+            padding: 1.3rem 1rem;
+        }
+        
+        .form-control {
+            padding: 0.6rem 0.8rem;
+            font-size: 0.9rem;
+        }
+        
+        .btn-login {
+            padding: 0.7rem;
+        }
+    }
+    
+    @media (max-height: 700px) {
+        .login-card {
+            max-height: 85vh;
+            padding-top: 1.2rem;
+            padding-bottom: 1.2rem;
+        }
+        
+        .logo-section {
+            margin-bottom: 1rem;
+        }
+        
+        .welcome-subtitle {
+            margin-bottom: 1.2rem;
+        }
+        
+        .compact-row {
+            margin-bottom: 1rem;
+        }
+        
+        .divider {
+            margin: 1rem 0;
+        }
+        
+        .social-login {
+            margin-bottom: 1rem;
+        }
+    }
+    
+    /* Animation for form elements */
+    .form-group {
+        animation: fadeInUp 0.4s ease forwards;
+        opacity: 0;
+    }
+    
+    .form-group:nth-child(1) { animation-delay: 0.1s; }
+    .form-group:nth-child(2) { animation-delay: 0.2s; }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(15px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="login-page">
+    <div class="login-card">
+        <!-- Logo and branding -->
+        <div class="logo-section">
+            <div class="logo">
+                <i class="fas fa-music logo-icon"></i>
+                <span class="logo-text">Tunetrails</span>
+            </div>
+            <p class="tagline">Your musical journey starts here</p>
+        </div>
+        
+        <!-- Welcome message -->
+        <h1 class="welcome-title">Welcome Back</h1>
+        <p class="welcome-subtitle">Sign in to continue learning music</p>
+        
+        <!-- Login form -->
+        <form id="loginForm" class="needs-validation" novalidate>
+            {% csrf_token %}
+            <!-- Email field -->
+            <div class="form-group mb-3">
+                <label for="username" class="form-label">Email</label>
+                <input type="email" class="form-control" id="username" placeholder="Enter your email" required>
+                <div class="invalid-feedback">
+                    Please enter a valid email address.
+                </div>
+            </div>
+            
+            <!-- Password field -->
+            <div class="form-group mb-3">
+                <label for="password" class="form-label">Password</label>
+                <div class="input-group">
+                    <input type="password" class="form-control" id="password" placeholder="Enter your password" required>
+                    <button type="button" class="password-toggle" id="togglePassword">
+                        <i class="far fa-eye"></i>
+                    </button>
+                    <div class="invalid-feedback">
+                        Please enter your password.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Remember me and forgot password -->
+            <div class="compact-row">
+                <div class="form-check remember-check">
+                    <input class="form-check-input" type="checkbox" id="rememberMe">
+                    <label class="form-check-label" for="rememberMe">
+                        Remember me
+                    </label>
+                </div>
+                <a href="#" class="forgot-password">Forgot password?</a>
+            </div>
+            
+            <!-- Login button -->
+            <button type="submit" class="btn btn-login">
+                <i class="fas fa-sign-in-alt me-2"></i> Sign In
+            </button>
+        </form>
+        
+        <!-- Divider -->
+        <div class="divider">
+            <span class="divider-text">Or sign in with</span>
+        </div>
+        
+        <!-- Social login buttons -->
+        <div class="social-login">
+            <button class="btn btn-social btn-google">
+                <i class="fab fa-google social-icon"></i> Sign in with Google
+            </button>
+            <button class="btn btn-social btn-github">
+                <i class="fab fa-github social-icon"></i> Sign in with GitHub
+            </button>
+        </div>
+        
+        <!-- Additional links -->
+        <div class="additional-links">
+            <p class="signup-link">
+                New to Tunetrails? <a href="{% url 'dashboard:signup' %}">Create an account</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Firebase & App Scripts -->
+<script type="module">
+    // Import Firebase modules
+   import { 
+    getAuth, 
+    signInWithEmailAndPassword, 
+    GoogleAuthProvider, 
+    signInWithPopup,
+    signInWithRedirect,  
+    getRedirectResult    
+} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+	import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-analytics.js";
+	
+    // Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyAQLreoWTPOMekuiqOOvgX-zn0yPXcT1_Y",
+        authDomain: "tunetrails-v2.firebaseapp.com",
+        projectId: "tunetrails-v2",
+        storageBucket: "tunetrails-v2.firebasestorage.app",
+        messagingSenderId: "614045056384",
+        appId: "1:614045056384:web:1ec0524dbf570db5d19565",
+        measurementId: "G-4YGPXK3HWE"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const auth = getAuth();
+
+    // Elements
+    const loginForm = document.getElementById('loginForm');
+    const loginBtn = loginForm.querySelector('.btn-login');
+    const googleBtn = document.querySelector('.btn-google');
+    const githubBtn = document.querySelector('.btn-github');
+    const togglePasswordBtn = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+
+    // Toggle password visibility
+    togglePasswordBtn.addEventListener('click', () => {
+        const icon = togglePasswordBtn.querySelector('i');
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            icon.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+            passwordInput.type = 'password';
+            icon.classList.replace('fa-eye-slash', 'fa-eye');
+        }
+    });
+
+    // Helper to show loading
+    function setLoading(isLoading, button, originalText) {
+        if (isLoading) {
+            button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Signing In...';
+            button.disabled = true;
+        } else {
+            button.innerHTML = originalText;
+            button.disabled = false;
+        }
+    }
+
+    // Email/password login
+    loginForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        loginForm.classList.add('was-validated');
+
+        if (!loginForm.checkValidity()) return;
+
+        const email = document.getElementById('username').value;
+        const password = passwordInput.value;
+        const originalText = loginBtn.innerHTML;
+
+        try {
+            setLoading(true, loginBtn, originalText);
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+            // Redirect to dashboard
+            window.location.href = "{% url 'dashboard:welcome' %}";
+
+        } catch (error) {
+            alert(`Login failed: ${error.message}`);
+        } finally {
+            setLoading(false, loginBtn, originalText);
+        }
+    });
+
+    // Google login
+  
+// Google login using redirect (works on all browsers)
+googleBtn.addEventListener('click', async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+        // Start Google sign-in via redirect
+        await signInWithRedirect(auth, provider);
+        // Note: This will redirect away from the page immediately
+    } catch (error) {
+        console.error('Google Sign-in redirect failed:', error);
+        alert(`Google Sign-in failed: ${error.message}`);
+    }
+});
+
+// After redirect, handle the result
+window.addEventListener('load', async () => {
+    try {
+        const result = await getRedirectResult(auth);
+        if (result && result.user) {
+            // Successfully signed in
+            const user = result.user;
+            // Redirect to dashboard
+            window.location.href = "{% url 'dashboard:welcome' %}";
+        }
+    } catch (error) {
+        console.error('Error handling Google redirect result:', error);
+        // Optionally show a user-friendly message
+    }
+});
+
+    // GitHub login placeholder
+    githubBtn.addEventListener('click', () => {
+        alert('GitHub login will be implemented soon!');
+    });
+
+    
+</script>
+{% endblock %}
