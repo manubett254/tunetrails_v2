@@ -1,4 +1,4 @@
-{% extends 'dashboard/base.html' %}
+{% extends 'base.html' %}
 {% load static %}
 
 {% block title %}Login | Tunetrails{% endblock %}
@@ -420,17 +420,10 @@
 <!-- Firebase & App Scripts -->
 <script type="module">
     // Import Firebase modules
-   import { 
-    getAuth, 
-    signInWithEmailAndPassword, 
-    GoogleAuthProvider, 
-    signInWithPopup,
-    signInWithRedirect,  
-    getRedirectResult    
-} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-	import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-analytics.js";
-	
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-analytics.js";
+    import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+
     // Firebase configuration
     const firebaseConfig = {
         apiKey: "AIzaSyAQLreoWTPOMekuiqOOvgX-zn0yPXcT1_Y",
@@ -505,41 +498,34 @@
     });
 
     // Google login
-  
-// Google login using redirect (works on all browsers)
-googleBtn.addEventListener('click', async () => {
-    const provider = new GoogleAuthProvider();
-    try {
-        // Start Google sign-in via redirect
-        await signInWithRedirect(auth, provider);
-        // Note: This will redirect away from the page immediately
-    } catch (error) {
-        console.error('Google Sign-in redirect failed:', error);
-        alert(`Google Sign-in failed: ${error.message}`);
-    }
-});
-
-// After redirect, handle the result
-window.addEventListener('load', async () => {
-    try {
-        const result = await getRedirectResult(auth);
-        if (result && result.user) {
-            // Successfully signed in
+    googleBtn.addEventListener('click', async () => {
+        const provider = new GoogleAuthProvider();
+        try {
+            const result = await signInWithPopup(auth, provider);
             const user = result.user;
             // Redirect to dashboard
             window.location.href = "{% url 'dashboard:welcome' %}";
+
+        } catch (error) {
+            alert(`Google Sign-in failed: ${error.message}`);
         }
-    } catch (error) {
-        console.error('Error handling Google redirect result:', error);
-        // Optionally show a user-friendly message
-    }
-});
+    });
 
     // GitHub login placeholder
     githubBtn.addEventListener('click', () => {
         alert('GitHub login will be implemented soon!');
     });
 
-    
+    // Prevent scrolling outside login card
+    document.addEventListener('wheel', (e) => {
+        const loginCard = document.querySelector('.login-card');
+        const atTop = loginCard.scrollTop === 0;
+        const atBottom = loginCard.scrollHeight - loginCard.clientHeight <= loginCard.scrollTop + 1;
+
+        if ((atTop && e.deltaY < 0) || (atBottom && e.deltaY > 0)) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+
 </script>
 {% endblock %}
