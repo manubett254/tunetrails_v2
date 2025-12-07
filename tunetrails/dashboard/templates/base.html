@@ -26,7 +26,6 @@
             --border-radius: 12px;
             --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             --transition: all 0.3s ease;
-            --sidebar-width: 260px;
         }
         
         * {
@@ -38,9 +37,9 @@
         body {
             font-family: 'Inter', sans-serif;
             color: var(--text-color);
-            background-color: #f5f5f5;
             min-height: 100vh;
             position: relative;
+            overflow-x: hidden;
         }
         
         /* Background styling */
@@ -67,13 +66,19 @@
             background: linear-gradient(135deg, rgba(26, 26, 46, 0.88) 0%, rgba(106, 100, 200, 0.78) 100%);
         }
         
-        /* Header/Navigation */
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* Navigation */
         .navbar-custom {
-            background-color: rgba(255, 255, 255, 0.95);
+            background-color: rgba(255, 255, 255, 0.98);
             backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
             padding: 0.8rem 1.5rem;
+            transition: all 0.3s ease;
         }
         
         .navbar-brand {
@@ -86,6 +91,11 @@
             color: transparent;
             display: flex;
             align-items: center;
+            transition: var(--transition);
+        }
+        
+        .navbar-brand:hover {
+            transform: translateX(-2px);
         }
         
         .navbar-brand i {
@@ -98,18 +108,32 @@
             font-weight: 500;
             margin: 0 0.5rem;
             transition: var(--transition);
-            border-radius: 6px;
+            border-radius: 8px;
             padding: 0.5rem 1rem !important;
+            position: relative;
         }
         
-        .nav-link:hover {
-            color: var(--primary-color);
-            background-color: rgba(108, 99, 255, 0.1);
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
         }
         
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 70%;
+        }
+        
+        .nav-link:hover,
         .nav-link.active {
             color: var(--primary-color);
-            background-color: rgba(108, 99, 255, 0.1);
+            background-color: rgba(108, 99, 255, 0.08);
         }
         
         .btn-primary-custom {
@@ -120,26 +144,51 @@
             border-radius: 8px;
             font-weight: 600;
             transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary-custom::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .btn-primary-custom:hover::before {
+            left: 100%;
         }
         
         .btn-primary-custom:hover {
             background: linear-gradient(90deg, var(--primary-dark), var(--primary-color));
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(108, 99, 255, 0.3);
-            color: white;
+            box-shadow: 0 8px 20px rgba(108, 99, 255, 0.25);
         }
         
         /* Main Content */
         .main-content {
-            min-height: calc(100vh - 120px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            min-height: calc(100vh - 140px);
             padding: 2rem 1rem;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
         .content-wrapper {
-            background-color: rgba(255, 255, 255, 0.97);
+            background-color: rgba(255, 255, 255, 0.95);
             border-radius: var(--border-radius);
             box-shadow: var(--box-shadow);
             width: 100%;
@@ -147,8 +196,20 @@
             padding: 2rem;
             position: relative;
             overflow: hidden;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            animation: slideUp 0.6s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
         .content-wrapper::before {
@@ -173,6 +234,10 @@
             font-size: 2.2rem;
             margin-bottom: 0.5rem;
             color: var(--dark-color);
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
         }
         
         .page-subtitle {
@@ -180,6 +245,7 @@
             font-size: 1.1rem;
             max-width: 700px;
             margin: 0 auto;
+            line-height: 1.6;
         }
         
         /* Footer */
@@ -188,7 +254,7 @@
             backdrop-filter: blur(10px);
             border-top: 1px solid rgba(255, 255, 255, 0.2);
             padding: 1.5rem 0;
-            margin-top: 2rem;
+            margin-top: auto;
         }
         
         .footer-content {
@@ -215,10 +281,26 @@
             text-decoration: none;
             margin: 0 0.8rem;
             transition: var(--transition);
+            position: relative;
+        }
+        
+        .footer-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--primary-color);
+            transition: width 0.3s ease;
         }
         
         .footer-links a:hover {
             color: var(--primary-color);
+        }
+        
+        .footer-links a:hover::after {
+            width: 100%;
         }
         
         .copyright {
@@ -234,6 +316,19 @@
             backdrop-filter: blur(10px);
             box-shadow: var(--box-shadow);
             margin-bottom: 1.5rem;
+            border-left: 4px solid var(--primary-color);
+            animation: slideInRight 0.3s ease-out;
+        }
+        
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
         
         /* Cards */
@@ -244,10 +339,11 @@
             backdrop-filter: blur(10px);
             box-shadow: var(--box-shadow);
             transition: var(--transition);
+            overflow: hidden;
         }
         
         .card-custom:hover {
-            transform: translateY(-5px);
+            transform: translateY(-8px);
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
         }
         
@@ -257,6 +353,18 @@
             border-radius: var(--border-radius) var(--border-radius) 0 0 !important;
             padding: 1rem 1.5rem;
             font-weight: 600;
+        }
+        
+        /* Utility Classes */
+        .gradient-text {
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .text-light {
+            color: var(--text-light);
         }
         
         /* Responsive adjustments */
@@ -269,6 +377,10 @@
             
             .nav-link {
                 margin: 0.2rem 0;
+            }
+            
+            .nav-link::after {
+                display: none;
             }
             
             .footer-content {
@@ -294,6 +406,10 @@
             .page-subtitle {
                 font-size: 1rem;
             }
+            
+            .navbar-custom {
+                padding: 0.8rem 1rem;
+            }
         }
         
         @media (max-width: 576px) {
@@ -301,29 +417,16 @@
                 padding: 1.2rem;
             }
             
-            .navbar-custom {
-                padding: 0.8rem 1rem;
+            .footer-links {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 0.5rem;
             }
-        }
-        
-        /* Utility Classes */
-        .gradient-text {
-            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-        
-        .gradient-bg {
-            background: linear-gradient(90deg, var(--primary-color), var(--primary-dark));
-        }
-        
-        .text-light {
-            color: var(--text-light);
-        }
-        
-        .text-primary-custom {
-            color: var(--primary-color) !important;
+            
+            .footer-links a {
+                margin: 0 0.3rem;
+            }
         }
     </style>
     
@@ -342,7 +445,7 @@
                 <i class="fas fa-music"></i>Tunetrails
             </a>
             
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             
@@ -363,19 +466,14 @@
                             <i class="fas fa-play-circle me-1"></i>Lessons
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if request.resolver_match.url_name == 'practice' %}active{% endif %}" href="{% url 'dashboard:practice' %}">
-                            <i class="fas fa-dumbbell me-1"></i>Practice
-                        </a>
-                    </li>
                     
                     <!-- Firebase User Dropdown -->
                     <li class="nav-item dropdown" id="firebaseUserDropdown" style="display:none;">
-                        <a class="nav-link dropdown-toggle" href="#" id="firebaseDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle" href="#" id="firebaseDropdown" role="button" data-bs-toggle="dropdown">
                             <img id="userIcon" src="" alt="User" style="width:28px;height:28px;border-radius:50%;margin-right:5px;">
                             <span id="userName"></span>
                         </a>
-                        <ul class="dropdown-menu" aria-labelledby="firebaseDropdown">
+                        <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{% url 'dashboard:profile' %}"><i class="fas fa-user me-2"></i>Profile</a></li>
                             <li><a class="dropdown-item" href="{% url 'dashboard:dashboard' %}"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
                             <li><hr class="dropdown-divider"></li>
@@ -383,13 +481,13 @@
                         </ul>
                     </li>
                     
-                    <!-- Regular Django auth dropdown (only shown if using Django auth) -->
+                    <!-- Django auth dropdown -->
                     {% if user.is_authenticated %}
                     <li class="nav-item dropdown" id="djangoUserDropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" data-bs-toggle="dropdown">
                             <i class="fas fa-user-circle me-1"></i>{{ user.username }}
                         </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{% url 'dashboard:profile' %}"><i class="fas fa-user me-2"></i>Profile</a></li>
                             <li><a class="dropdown-item" href="{% url 'dashboard:dashboard' %}"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
                             <li><hr class="dropdown-divider"></li>
@@ -413,7 +511,10 @@
         {% if messages %}
             {% for message in messages %}
             <div class="alert alert-custom alert-dismissible fade show" role="alert">
-                {{ message }}
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-info-circle me-2 text-primary"></i>
+                    <div>{{ message }}</div>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
             {% endfor %}
@@ -422,113 +523,39 @@
     
     <!-- Main Content -->
     <main class="main-content">
-        <div class="content-wrapper">
-            {% block content %}
-            <!-- Page content will be inserted here -->
-            {% endblock %}
+        <div class="container">
+            <div class="content-wrapper">
+                {% block content %}
+                <!-- Page content will be inserted here -->
+                {% endblock %}
+            </div>
         </div>
     </main>
     
     <!-- Footer -->
     <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-logo">
-                <i class="fas fa-music"></i> Tunetrails
-            </div>
-            <div class="footer-links">
-                <a href="#">About</a>
-                <a href="#">Courses</a>
-                <a href="#">Pricing</a>
-                <a href="#">Contact</a>
-                <a href="#">Privacy Policy</a>
-                <a href="#">Terms of Service</a>
-            </div>
-            <div class="copyright">
-                &copy; {% now "Y" %} Tunetrails. Your musical journey.
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <i class="fas fa-music"></i> Tunetrails
+                </div>
+                <div class="footer-links">
+                    <a href="#">About</a>
+                    <a href="#">Courses</a>
+                    <a href="#">Pricing</a>
+                    <a href="#">Contact</a>
+                    <a href="#">Privacy</a>
+                    <a href="#">Terms</a>
+                </div>
+                <div class="copyright">
+                    &copy; {% now "Y" %} Tunetrails. Your musical journey.
+                </div>
             </div>
         </div>
     </footer>
     
-    <!-- Bootstrap JS Bundle with Popper -->
+    <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Firebase and Auth Scripts -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
-        
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyAQLreoWTPOMekuiqOOvgX-zn0yPXcT1_Y",
-            authDomain: "tunetrails-v2.firebaseapp.com",
-            projectId: "tunetrails-v2",
-            storageBucket: "tunetrails-v2.firebasestorage.app",
-            messagingSenderId: "614045056384",
-            appId: "1:614045056384:web:1ec0524dbf570db5d19565",
-            measurementId: "G-4YGPXK3HWE"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth();
-
-        // Firebase auth state listener
-        onAuthStateChanged(auth, (user) => {
-            const firebaseDropdown = document.getElementById('firebaseUserDropdown');
-            const djangoDropdown = document.getElementById('djangoUserDropdown');
-            const loginBtnContainer = document.getElementById('loginBtnContainer');
-            const userIcon = document.getElementById('userIcon');
-            const userName = document.getElementById('userName');
-            const logoutBtn = document.getElementById('logoutBtn');
-
-            if (user) {
-                // User is signed in with Firebase
-                if (firebaseDropdown) {
-                    firebaseDropdown.style.display = 'block';
-                    userName.textContent = user.displayName || user.email.split('@')[0];
-                    userIcon.src = user.photoURL || '{% static "dashboard/images/default_user.png" %}';
-                }
-                
-                // Hide Django user dropdown if visible
-                if (djangoDropdown) {
-                    djangoDropdown.style.display = 'none';
-                }
-                
-                // Hide login button
-                if (loginBtnContainer) {
-                    loginBtnContainer.style.display = 'none';
-                }
-            } else {
-                // No Firebase user is signed in
-                if (firebaseDropdown) {
-                    firebaseDropdown.style.display = 'none';
-                }
-                
-                // Show Django user dropdown if user is authenticated with Django
-                if (djangoDropdown) {
-                    djangoDropdown.style.display = 'block';
-                }
-                
-                // Show login button if not authenticated with Django
-                if (loginBtnContainer && !djangoDropdown) {
-                    loginBtnContainer.style.display = 'block';
-                }
-            }
-        });
-
-        // Logout button handler
-        document.addEventListener('click', (e) => {
-            if (e.target && e.target.id === 'logoutBtn') {
-                e.preventDefault();
-                signOut(auth).then(() => {
-                    // Sign-out successful, redirect to login
-                    window.location.href = "{% url 'dashboard:login' %}";
-                }).catch((error) => {
-                    console.error('Error signing out:', error);
-                });
-            }
-        });
-    </script>
     
     {% block extra_js %}{% endblock %}
 </body>
